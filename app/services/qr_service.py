@@ -4,6 +4,8 @@ import qrcode
 import logging
 from pathlib import Path
 from app.config import SERVER_BASE_URL, SERVER_DOWNLOAD_FOLDER
+from qrcode.image.pil import PilImage
+
 
 def list_qr_codes(directory_path: Path) -> List[str]:
     """
@@ -39,7 +41,11 @@ def generate_qr_code(data: str, path: Path, fill_color: str = 'red', back_color:
         qr = qrcode.QRCode(version=1, box_size=size, border=5)
         qr.add_data(data)
         qr.make(fit=True)
-        img = qr.make_image(fill_color=fill_color, back_color=back_color)
+        img = qr.make_image(
+            fill_color=fill_color,
+            back_color=back_color,
+            image_factory=PilImage
+        ).convert("RGB")
         img.save(str(path))
         logging.info(f"QR code successfully saved to {path}")
     except Exception as e:
